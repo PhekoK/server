@@ -14,6 +14,12 @@ var productSchema = mongoose.Schema({
         type: Date,
         default: Date.now
     }
-});
+}, { versionKey: false });
+
+/* productSchema.method("toJSON", function() {
+    const { __v, _id, ...object } = this.toObject();
+    object.id = _id;
+    return object;
+  }); */
 
 module.exports = mongoose.model('Product', productSchema);

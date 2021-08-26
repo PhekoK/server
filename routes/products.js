@@ -12,9 +12,11 @@ router.get('/', function(req, res, next) {
 });
 
 //Request URL by Id: http:localhost:3000/products/:id
-router.get('/:id', function(req, res, next) {
+router.get('/:id', (req, res) => {
   Product.findById(req.params.id, (err, data) => {
     if(err) throw err;
+    if(!data)
+        return res.status(404).send('Product Not found with given ID');
     res.send(data);
   })
 });
