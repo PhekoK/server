@@ -16,9 +16,22 @@ router.get('/:id', (req, res) => {
   Product.findById(req.params.id, (err, data) => {
     if(err) throw err;
     if(!data)
-        return res.status(404).send('Product Not found with given ID');
+        return res.status(404).send('Prpduct Not found with given ID');
     res.send(data);
-  })
+  });
+});
+
+// PUT request to edit 
+router.put('/:id', (req, res) => {
+  Product.findById(req.params.id, (err, data) => {
+    if (err) throw err;
+    if(!data)
+        return res.status(404).send("Product with given ID does not exist!!");
+    Product.findByIdAndUpdate(req.params.id, req.body, (err, data) => {
+      if (err) throw err;
+      res.send(data);
+    });
+  });
 });
 
 //Request URL http://localhost:3000/products

@@ -56,11 +56,17 @@ router.post('/', (req, res) => {
 }
  */
 router.put('/:id', (req, res) => {
-  User.findByIdAndUpdate(req.params.id, req.body, function (err) {
-    if (err) throw err;
-    res.send('User Updated Successfully');
-  })
-})
+  User.findById(req.params.id, (err, data) => {
+    if(err) throw err;
+    if(!data) 
+         return res.status(404).send("User does not exist with given ID");
+     User.findByIdAndUpdate(req.params.id, req.body, function (err) {
+         if (err) throw err;
+          //res.send('User Updated Successfully');
+         res.send(data);
+        });
+  });
+});
 
 /** Delete User by Id */
 /* router.delete('/:id', (req, res) => {
@@ -75,7 +81,7 @@ router.put('/:id', (req, res) => {
   });
 }); */
 router.delete('/:id', (req, res) => {
-  User.findByIdAndRemove(req.params.id, function (err) {
+  User.findByIdAndDelete(req.params.id, function (err) {
     if (err)
         throw err;
     res.send('User Deleted Successfully...')
