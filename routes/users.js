@@ -72,17 +72,6 @@ router.put('/:id', (req, res) => {
 });
 
 /** Delete User by Id */
-/* router.delete('/:id', (req, res) => {
-  User.findById(req.params.id, (err, data) => {
-      if (err) throw err;
-      if (!data)
-           return res.status(404).send("User doesn't exist with given Id");
-      User.findByIdAndDelete(req.params.id, (err, data) => {
-          if (err) throw err;
-          res.send(data);
-      });
-  });
-}); */
 
 /* router.delete('/:id', async (req, res, next) => {
   try{
@@ -106,6 +95,14 @@ router.put('/:id', (req, res) => {
 }) */
 
 router.delete('/:id', function(req, res, next) {
+  User.findById(req.params.id, (err, user) => {
+    if (err) {
+      console.log(err.message);
+    }
+    if(!user) {
+      return res.status(404).send("User does not exist with given ID");
+    }
+  })
   User.findByIdAndRemove({_id: req.params.id}).then(function(user){
     res.send(user);
   });
