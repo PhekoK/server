@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+const createError = require('http-errors');
+const mongoose = require('mongoose');
+
 var User = require('../models/userModel');
 
 /* GET users listing. */
@@ -80,13 +83,33 @@ router.put('/:id', (req, res) => {
       });
   });
 }); */
-router.delete('/:id', (req, res) => {
-  User.findByIdAndDelete(req.params.id, function (err) {
-    if (err)
-        throw err;
-    res.send('User Deleted Successfully...')
-  })
-})
+
+/* router.delete('/:id', async (req, res, next) => {
+  try{
+   const id = req.params.id;
+   const result = await User.findByIdAndDelete(id, function (err) {
+     if(err){
+       return next(createError(400, "Invalid User ID"));
+     }
+   })
+   if(!result) {
+     return next(createError(404, "User Does not exist"));
+   }
+   res.send(result);
+  } catch(error){
+    console.log(error.message);
+    if(error instanceof mongoose.CastError) {
+      return next(createError(400, "Invalid User ID"));
+    }
+    next(error);
+  }
+}) */
+
+router.delete('/:id', function(req, res, next) {
+  User.findByIdAndRemove({_id: req.params.id}).then(function(user){
+    res.send(user);
+  });
+});
 
 
 module.exports = router;
