@@ -95,17 +95,26 @@ router.put('/:id', (req, res) => {
 }) */
 
 router.delete('/:id', function(req, res, next) {
-  User.findById(req.params.id, (err, user) => {
-    if (err) {
-      console.log(err.message);
+  try {
+    User.findById(req.params.id, (err, user) => {
+      if (err) {
+        console.log(err.message);
+      }
+      if(!user) {
+        return res.status(404).send("User does not exist with given ID");
+      }
+    })
+    User.findByIdAndRemove({_id: req.params.id}).then(function(user){
+      res.send(user);
+    });
+
+  } catch(error){
+    console.log(error.message);
+    if( error instanceof mongoose.CastError) {
+      return next(createError(400, "Invalid User _id"));
     }
-    if(!user) {
-      return res.status(404).send("User does not exist with given ID");
-    }
-  })
-  User.findByIdAndRemove({_id: req.params.id}).then(function(user){
-    res.send(user);
-  });
+  }
+  
 });
 
 
