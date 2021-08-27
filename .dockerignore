@@ -1,0 +1,9 @@
+.git
+
+capstone-project
+
+node_modules
+
+.gitignore
+
+*.md 
