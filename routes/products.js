@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var Product = require('../models/productModel');
+const createError = require('http-errors');
+const  mongoose  = require('mongoose');
 
 /* GET items listing. */
 //Request URL http:localhost:3000/products
@@ -12,19 +14,26 @@ router.get('/', function(req, res, next) {
 });
 
 //Request URL by Id: http:localhost:3000/products/:id
-router.get('/:id', (req, res) => {
+router.get('/:id', (req, res, next) => {
   Product.findById(req.params.id, (err, data) => {
-    if(err) throw err;
+    if(err) 
+         console.log(err);
+         if (err instanceof mongoose.CastError){
+           next(createError(400, "Invalid Product ID"))
+           return;
+         }
     if(!data)
-        return res.status(404).send('Prpduct Not found with given ID');
-    res.send(data);
+        return res.status(404).send('Product Not found with given ID');
+          //throw createError(404, 'Product with given ID does not exist');  
+        res.send(data);
   });
 });
 
 // PUT request to edit 
 router.put('/:id', (req, res) => {
   Product.findById(req.params.id, (err, data) => {
-    if (err) throw err;
+    if (err) 
+        console.log(err.message);
     if(!data)
         return res.status(404).send("Product with given ID does not exist!!");
     Product.findByIdAndUpdate(req.params.id, req.body, (err, data) => {
@@ -33,6 +42,28 @@ router.put('/:id', (req, res) => {
     });
   });
 });
+
+// PUT request to edit 
+router.patch('/:id', async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const updates = req.body;
+    const options = { new: true };
+
+    const result = await Product.findByIdAndUpdate(id, updates, options); 
+    if(!result) {
+      throw createError(404, "Product does not exist");
+    }
+    res.send(result);
+  } catch(error) {
+    console.log(error.message);
+    if (error instanceof mongoose.CastError){
+      return next(createError(400, "Invalid Product ID"))
+    }
+    next(error)
+  }
+});
+
 
 //Request URL http://localhost:3000/products
 // Header : Content Type: application/json
@@ -57,5 +88,6 @@ router.post('/', (req, res) => {
     res.send(data);
   });
 });
+
 
 module.exports = router;
