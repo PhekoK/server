@@ -89,5 +89,30 @@ router.post('/', (req, res) => {
   });
 });
 
+//Handle DELETE request
+router.delete('/:id', function(req, res, next) {
+  try {
+    Product.findById(req.params.id, (err, data) => {
+      if (err) {
+        console.log(err.message);
+      }
+      if(!data) {
+        return res.status(404).send("Product does not exist with given ID");
+      }
+    })
+    Product.findByIdAndRemove({_id: req.params.id}).then(function(data){
+      res.send(data);
+    });
+
+  } catch(error){
+    console.log(error.message);
+    if( error instanceof mongoose.CastError) {
+      return next(createError(400, "Invalid Product _id"));
+    }
+  }
+  
+});
+
+
 
 module.exports = router;
