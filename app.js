@@ -11,7 +11,9 @@ var productsRouter = require('./routes/products');
 
 //mongoose.connect("mongodb://localhost:27017/capstonedb",
 
-mongoose.connect("mongodb://mongo-db/capstonedb",
+//mongoose.connect("mongodb://mongo-db/capstonedb",
+
+mongoose.connect("mongodb://localhost:27017/capstonedb",
      { useNewUrlParser: true, useUnifiedTopology: true})
      .then(() => { console.log('Connected to Database!!!')})
      .catch((error) => { console.log(error) } )
